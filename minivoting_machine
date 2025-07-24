@@ -1,0 +1,169 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_VOTERS 100
+
+typedef struct {
+    int aadhar_id;
+    char name[50];
+    int age;
+    char city[20];
+    int unique_id;
+} candidate;
+
+typedef struct {
+    int voter_id;
+    int voted_candidate_id;
+} voter;
+
+candidate arr[100];
+voter vrr[100];
+int n, nv;
+
+void registerCandidates();
+void displayCandidates();
+void castVote();
+void generateResults();
+
+int main() {
+    printf("Enter number of candidates: ");
+    scanf("%d", &n);
+    printf("Enter number of voters: ");
+    scanf("%d", &nv);
+
+    int choice;
+    do {
+        printf("\n******* Mini Voting System *******\n");
+        printf("1. Register Candidates\n");
+        printf("2. Display Candidates\n");
+        printf("3. Cast Vote\n");
+        printf("4. Generate Results\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                registerCandidates();
+                break;
+            case 2:
+                displayCandidates();
+                break;
+            case 3:
+                castVote();
+                break;
+            case 4:
+                generateResults();
+                break;
+            case 0:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice.\n");
+        }
+    } while (choice != 0);
+
+    return 0;
+}
+
+void registerCandidates() {
+    for (int i = 0; i < n; i++) {
+        printf("\nCandidate %d:\n", i + 1);
+        printf("Enter name: ");
+        scanf("%s", arr[i].name);
+        printf("Enter Aadhaar ID: ");
+        scanf("%d", &arr[i].aadhar_id);
+        if (arr[i].aadhar_id < 100000000000 || arr[i].aadhar_id > 999999999999) {
+            printf("Invalid Aadhaar ID.\n");
+        }
+        printf("Enter age: ");
+        scanf("%d", &arr[i].age);
+        printf("Enter city: ");
+        scanf("%s", arr[i].city);
+        printf("Enter unique ID (single digit): ");
+        scanf("%d", &arr[i].unique_id);
+    }
+    printf("\nCandidates registered successfully!\n");
+}
+
+void displayCandidates() {
+    for (int i = 0; i < n; i++) {
+        printf("\nCandidate %d:\n", i + 1);
+        printf("Name: %s\n", arr[i].name);
+        printf("Aadhaar ID: %d\n", arr[i].aadhar_id);
+        printf("Age: %d\n", arr[i].age);
+        printf("City: %s\n", arr[i].city);
+        printf("Unique ID: %d\n", arr[i].unique_id);
+    }
+}
+
+void castVote() {
+    for (int i = 0; i < nv; i++) {
+        printf("\nVoter %d:\n", i + 1);
+        printf("Enter voter ID (4-digit): ");
+        scanf("%d", &vrr[i].voter_id);
+        if (vrr[i].voter_id < 1000 || vrr[i].voter_id > 9999) {
+            printf("Invalid voter ID.\n");
+            i--;
+            continue;
+        }
+
+        // Check if already voted
+        int already_voted = 0;
+        for (int j = 0; j < i; j++) {
+            if (vrr[i].voter_id == vrr[j].voter_id) {
+                printf("You have already voted.\n");
+                already_voted = 1;
+                break;
+            }
+        }
+        if (already_voted) continue;
+
+        printf("Enter candidate unique ID to vote for: ");
+        scanf("%d", &vrr[i].voted_candidate_id);
+
+        // Validate candidate ID
+        int valid = 0;
+        for (int k = 0; k < n; k++) {
+            if (arr[k].unique_id == vrr[i].voted_candidate_id) {
+                valid = 1;
+                break;
+            }
+        }
+        if (!valid) {
+            printf("Invalid candidate ID.\n");
+            i--;
+            continue;
+        }
+
+        printf("Vote cast successfully!\n");
+    }
+}
+
+void generateResults() {
+    int maxVotes = 0, winnerIndex = -1;
+    int voteCount[100] = {0};
+
+    for (int i = 0; i < nv; i++) {
+        for (int j = 0; j < n; j++) {
+            if (vrr[i].voted_candidate_id == arr[j].unique_id) {
+                voteCount[j]++;
+            }
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        printf("%s received %d vote(s).\n", arr[i].name, voteCount[i]);
+        if (voteCount[i] > maxVotes) {
+            maxVotes = voteCount[i];
+            winnerIndex = i;
+        }
+    }
+
+    if (winnerIndex != -1) {
+        printf("\nThe winner is %s with %d votes!\n", arr[winnerIndex].name, maxVotes);
+    } else {
+        printf("\nNo votes cast.\n");
+    }
+}
