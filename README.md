@@ -1,5 +1,6 @@
 # Voting-machine
 A console-based Mini Voting Machine in C that supports candidate registration, secure voting, and automatic result generation.
 <br>
-# Author
-# Shaswat Singh
+Author:-
+<br>
+Shaswat Singh
